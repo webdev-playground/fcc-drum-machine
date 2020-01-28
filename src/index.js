@@ -91,12 +91,19 @@ class Display extends React.Component {
 }
 
 class DrumPad extends React.Component {
+  playSound(audioId) {
+    return function() {
+      const audioElement = document.getElementById(audioId);
+      audioElement.play();
+    };
+  }
+
   createDrumPads(audioBank) {
     return audioBank.map(element => {
       const { keyCode, keyTrigger, id, url } = element; // keyCode still unused
 
       return (
-        <div id={id} className="drum-pad">
+        <div id={id} className="drum-pad" onClick={this.playSound(keyTrigger)}>
           <audio id={keyTrigger} class="clip" src={url}></audio>
           <p>{keyTrigger}</p>
         </div>

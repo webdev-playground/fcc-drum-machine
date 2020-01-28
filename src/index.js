@@ -64,13 +64,14 @@ class App extends React.Component {
     super(props);
     this.state = {
       audioBank: audioBank,
+      currentAudioId: 'Chord-1',
     };
   }
 
   render() {
     return (
       <div id="drum-machine">
-        <Display />
+        <Display currentAudioId={this.state.currentAudioId} />
         <DrumPad audioBank={this.state.audioBank} />
       </div>
     );
@@ -79,7 +80,13 @@ class App extends React.Component {
 
 class Display extends React.Component {
   render() {
-    return <div id="display">Display</div>;
+    const currentAudioId = this.props.currentAudioId;
+
+    return (
+      <div id="display">
+        <h1>{currentAudioId}</h1>
+      </div>
+    );
   }
 }
 

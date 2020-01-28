@@ -66,13 +66,21 @@ class App extends React.Component {
       audioBank: audioBank,
       currentAudioId: 'Chord-1',
     };
+    this.handleAudioIdUpdate = this.handleAudioIdUpdate.bind(this);
+  }
+
+  handleAudioIdUpdate(audioId) {
+    this.setState({ currentAudioId: audioId });
   }
 
   render() {
     return (
       <div id="drum-machine">
         <Display currentAudioId={this.state.currentAudioId} />
-        <DrumPad audioBank={this.state.audioBank} />
+        <DrumPad
+          audioBank={this.state.audioBank}
+          onAudioIdUpdate={this.handleAudioIdUpdate}
+        />
       </div>
     );
   }
@@ -91,6 +99,12 @@ class Display extends React.Component {
 }
 
 class DrumPad extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleAudioIdUpdate = this.handleAudioIdUpdate.bind(this);
+    this.playSound = this.playSound.bind(this);
+  }
+
   componentDidMount() {
     const audioBank = this.props.audioBank;
     this.createKeyPressListeners(audioBank);
@@ -103,7 +117,7 @@ class DrumPad extends React.Component {
 
   createKeyPressListeners(audioBank) {
     audioBank.forEach(element => {
-      const play = this.playSound(element.keyTrigger);
+      const play = this.playSound(element.id, element.keyTrigger);
       document.addEventListener('keydown', event => {
         if (event.keyCode === element.keyCode) {
           play();
@@ -114,7 +128,7 @@ class DrumPad extends React.Component {
 
   removeKeyPressListeners(audioBank) {
     audioBank.forEach(element => {
-      const play = this.playSound(element.keyTrigger);
+      const play = this.playSound(element.id, element.keyTrigger);
       document.removeEventListener('keydown', event => {
         if (event.keyCode === element.keyCode) {
           play();
@@ -123,19 +137,28 @@ class DrumPad extends React.Component {
     });
   }
 
-  playSound(audioId) {
+  handleAudioIdUpdate(audioId) {
+    this.props.onAudioIdUpdate(audioId);
+  }
+
+  playSound(audioId, keyTrigger) {
     return function() {
-      const audioElement = document.getElementById(audioId);
+      this.handleAudioIdUpdate(audioId);
+      const audioElement = document.getElementById(keyTrigger);
       audioElement.play();
-    };
+    }.bind(this); // closures should be bound to the correct 'this'
   }
 
   createDrumPads(audioBank) {
     return audioBank.map(element => {
-      const { keyTrigger, id, url } = element; // keyCode still unused
+      const { keyTrigger, id, url } = element;
 
       return (
-        <div id={id} className="drum-pad" onClick={this.playSound(keyTrigger)}>
+        <div
+          id={id}
+          className="drum-pad"
+          onClick={this.playSound(id, keyTrigger)}
+        >
           <audio id={keyTrigger} class="clip" src={url}></audio>
           <p>{keyTrigger}</p>
         </div>

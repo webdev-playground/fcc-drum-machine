@@ -91,6 +91,38 @@ class Display extends React.Component {
 }
 
 class DrumPad extends React.Component {
+  componentDidMount() {
+    const audioBank = this.props.audioBank;
+    this.createKeyPressListeners(audioBank);
+  }
+
+  componentWillUnmount() {
+    const audioBank = this.props.audioBank;
+    this.removeKeyPressListeners(audioBank);
+  }
+
+  createKeyPressListeners(audioBank) {
+    audioBank.forEach(element => {
+      const play = this.playSound(element.keyTrigger);
+      document.addEventListener('keydown', event => {
+        if (event.keyCode === element.keyCode) {
+          play();
+        }
+      });
+    });
+  }
+
+  removeKeyPressListeners(audioBank) {
+    audioBank.forEach(element => {
+      const play = this.playSound(element.keyTrigger);
+      document.removeEventListener('keydown', event => {
+        if (event.keyCode === element.keyCode) {
+          play();
+        }
+      });
+    });
+  }
+
   playSound(audioId) {
     return function() {
       const audioElement = document.getElementById(audioId);
@@ -100,7 +132,7 @@ class DrumPad extends React.Component {
 
   createDrumPads(audioBank) {
     return audioBank.map(element => {
-      const { keyCode, keyTrigger, id, url } = element; // keyCode still unused
+      const { keyTrigger, id, url } = element; // keyCode still unused
 
       return (
         <div id={id} className="drum-pad" onClick={this.playSound(keyTrigger)}>

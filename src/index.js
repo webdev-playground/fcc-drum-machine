@@ -159,7 +159,7 @@ class DrumPad extends React.Component {
           className="drum-pad"
           onClick={this.playSound(id, keyTrigger)}
         >
-          <audio id={keyTrigger} class="clip" src={url}></audio>
+          <audio id={keyTrigger} className="clip" src={url}></audio>
           <p>{keyTrigger}</p>
         </div>
       );
